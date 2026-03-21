@@ -29,8 +29,20 @@ class SettingsActivity : AppCompatActivity() {
         btnSave.setOnClickListener {
             val reposStr = etEpgRepos.text.toString().trim()
             prefs.edit().putString("epg_repos", reposStr).apply()
-            Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show()
-            finish()
+            
+            val urls = reposStr.split("\n", ",").map { it.trim() }.filter { it.isNotEmpty() }
+            
+            androidx.lifecycle.lifecycleScope.launch {
+                btnSave.isEnabled = false
+                val ok = SupabaseSync.upsertEpgSources(urls)
+                btnSave.isEnabled = true
+                if (ok) {
+                    Toast.makeText(this@SettingsActivity, "Settings synced with TV", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@SettingsActivity, "Saved locally (Sync failed)", Toast.LENGTH_SHORT).show()
+                }
+                finish()
+            }
         }
     }
 

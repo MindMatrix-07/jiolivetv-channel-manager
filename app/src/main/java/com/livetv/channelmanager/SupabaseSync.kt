@@ -123,7 +123,71 @@ object SupabaseSync {
         }
     }
 
+    // ── Fetch all shared EPG sources from Supabase ──
+    suspend fun fetchEpgSources(): List<String> = withContext(Dispatchers.IO) {
+        try {
+            val conn = get("$SUPABASE_URL/rest/v1/epg_sources?select=url")
+            val code = conn.responseCode
+            val stream = if (code in 200..299) conn.inputStream else conn.errorStream
+            val body = stream?.bufferedReader()?.readText().orEmpty()
+            if (code !in 200..299) {
+                lastError = "Fetch EPG sources failed: HTTP $code ${body.take(200)}"
+                Log.e(TAG, lastError!!)
+                return@withContext emptyList()
+            }
+            val arr = JSONArray(body)
+            val list = mutableListOf<String>()
+            for (i in 0 until arr.length()) {
+                list.add(arr.getJSONObject(i).getString("url"))
+            }
+            lastError = null
+            list
+        } catch (e: Exception) {
+            lastError = e.message ?: e.javaClass.simpleName
+            Log.e(TAG, "fetchEpgSources failed", e)
+            emptyList()
+        }
+    }
+
+    // ── Upsert multiple EPG sources ──
+    suspend fun upsertEpgSources(urls: List<String>): Boolean = withContext(Dispatchers.IO) {
+        if (urls.isEmpty()) return@withContext true
+        try {
+            val json = JSONArray()
+            for (url in urls) {
+                json.put(JSONObject().put("url", url))
+            }
+            
+            val conn = URL("$SUPABASE_URL/rest/v1/epg_sources?on_conflict=url").openConnection() as HttpURLConnection
+            conn.apply {
+                requestMethod = "POST"
+                doOutput = true
+                setRequestProperty("apikey", SUPABASE_KEY)
+                setRequestProperty("Authorization", "Bearer $SUPABASE_KEY")
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Prefer", "resolution=merge-duplicates,return=minimal")
+                connectTimeout = 8000; readTimeout = 8000
+            }
+            OutputStreamWriter(conn.outputStream).use { it.write(json.toString()) }
+            val code = conn.responseCode
+            val ok = code in 200..299
+            if (ok) {
+                lastError = null
+            } else {
+                val body = conn.errorStream?.bufferedReader()?.readText().orEmpty()
+                lastError = "Upsert EPG sources failed: HTTP $code ${body.take(200)}"
+                Log.e(TAG, lastError!!)
+            }
+            ok
+        } catch (e: Exception) {
+            lastError = e.message ?: e.javaClass.simpleName
+            Log.e(TAG, "upsertEpgSources failed", e)
+            false
+        }
+    }
+
     // ─── helpers ───
+
 
     private fun channelToJson(ch: Channel) = JSONObject().apply {
         put("channel_id",          ch.channelNumber)

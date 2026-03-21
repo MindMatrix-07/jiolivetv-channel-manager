@@ -677,10 +677,19 @@ class AddChannelActivity : AppCompatActivity() {
 
     private suspend fun fetchEpgSuggestions(channelName: String): List<Pair<String, String>>? = withContext(Dispatchers.IO) {
         val prefs = getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE)
-        val reposStr = prefs.getString("epg_repos", "")?.trim()
-        if (reposStr.isNullOrEmpty()) return@withContext null
+        val localReposStr = prefs.getString("epg_repos", "")?.trim()
+        val localUrls = localReposStr?.split("\n", ",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+        
+        // Fetch shared repos from Supabase
+        val sharedUrls = try {
+            SupabaseSync.fetchEpgSources()
+        } catch (e: Exception) {
+            emptyList<String>()
+        }
+        
+        val urls = (localUrls + sharedUrls).distinct()
+        if (urls.isEmpty()) return@withContext null
 
-        val urls = reposStr.split("\n", ",").map { it.trim() }.filter { it.isNotEmpty() }
         val results = mutableListOf<Pair<String, String>>()
         val searchTarget = channelName.lowercase().replace(Regex("[^a-z0-9]"), "")
 
