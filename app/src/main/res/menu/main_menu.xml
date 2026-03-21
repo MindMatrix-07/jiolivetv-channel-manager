@@ -6,6 +6,12 @@
         android:title="TV Server"
         android:icon="@android:drawable/ic_menu_preferences"
         app:showAsAction="always" />
+    <!-- Settings -->
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_jio"
         android:title="Jio TV"

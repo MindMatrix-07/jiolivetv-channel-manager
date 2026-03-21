@@ -58,20 +58,35 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- EPG ID -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilEpgId"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="EPG ID (JioTV, e.g. 177)">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etEpgId"
-                    android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilEpgId"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:imeOptions="actionNext" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="EPG ID (JioTV, e.g. 177)">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEpgId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:imeOptions="actionNext" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFetchEpg"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:text="Fetch EPG" />
+            </LinearLayout>
 
             <!-- ─── Stream Link Extractor Card ─── -->
             <com.google.android.material.card.MaterialCardView

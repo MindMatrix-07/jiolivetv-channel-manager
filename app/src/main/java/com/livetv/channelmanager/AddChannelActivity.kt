@@ -216,6 +216,38 @@ class AddChannelActivity : AppCompatActivity() {
             }
         }
 
+        // ─── Fetch EPG ID Button ───
+        binding.btnFetchEpg.setOnClickListener {
+            val name = binding.etChannelName.text?.toString()?.trim()
+            if (name.isNullOrEmpty()) {
+                binding.tilChannelName.error = "Enter a channel name first"
+                return@setOnClickListener
+            }
+            binding.tilChannelName.error = null
+
+            lifecycleScope.launch {
+                binding.btnFetchEpg.isEnabled = false
+                val suggestions = fetchEpgSuggestions(name)
+                binding.btnFetchEpg.isEnabled = true
+
+                if (suggestions == null) {
+                    Toast.makeText(this@AddChannelActivity, "Please configure EPG source repositories in Settings first", Toast.LENGTH_LONG).show()
+                } else if (suggestions.isEmpty()) {
+                    Toast.makeText(this@AddChannelActivity, "No matching EPG found for '$name'", Toast.LENGTH_SHORT).show()
+                } else {
+                    val items = suggestions.map { "${it.second} (ID: ${it.first})" }.toTypedArray()
+                    com.google.android.material.dialog.MaterialAlertDialogBuilder(this@AddChannelActivity)
+                        .setTitle("Select EPG ID")
+                        .setItems(items) { _, which ->
+                            binding.etEpgId.setText(suggestions[which].first)
+                            Toast.makeText(this@AddChannelActivity, "EPG ID set", Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                }
+            }
+        }
+
         // ─── Auto-fill Metadata ───
         binding.etChannelNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -638,6 +670,76 @@ class AddChannelActivity : AppCompatActivity() {
             } catch (_: Exception) {}
         }
         null
+    }
+
+    private suspend fun fetchEpgSuggestions(channelName: String): List<Pair<String, String>>? = withContext(Dispatchers.IO) {
+        val prefs = getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE)
+        val reposStr = prefs.getString("epg_repos", "")?.trim()
+        if (reposStr.isNullOrEmpty()) return@withContext null
+
+        val urls = reposStr.split("\n", ",").map { it.trim() }.filter { it.isNotEmpty() }
+        val results = mutableListOf<Pair<String, String>>()
+        val searchTarget = channelName.lowercase().replace(Regex("[^a-z0-9]"), "")
+
+        for (urlStr in urls) {
+            try {
+                val url = URL(urlStr)
+                val conn = url.openConnection() as HttpURLConnection
+                conn.connectTimeout = 8000
+                conn.readTimeout = 8000
+                conn.connect()
+                if (conn.responseCode == 200) {
+                    val stream = if (urlStr.endsWith(".gz", ignoreCase = true)) {
+                        java.util.zip.GZIPInputStream(conn.inputStream)
+                    } else {
+                        conn.inputStream
+                    }
+                    
+                    val factory = org.xmlpull.v1.XmlPullParserFactory.newInstance()
+                    val parser = factory.newPullParser()
+                    parser.setInput(stream, null)
+                    
+                    var eventType = parser.eventType
+                    var currentId = ""
+                    var currentName = ""
+                    var insideChannel = false
+                    
+                    while (eventType != org.xmlpull.v1.XmlPullParser.END_DOCUMENT) {
+                        when (eventType) {
+                            org.xmlpull.v1.XmlPullParser.START_TAG -> {
+                                if (parser.name == "channel") {
+                                    insideChannel = true
+                                    currentId = parser.getAttributeValue(null, "id") ?: ""
+                                    currentName = ""
+                                } else if (insideChannel && parser.name == "display-name") {
+                                    currentName = parser.nextText()
+                                } else if (parser.name == "programme") {
+                                    // Optimization: Stop parsing once programmes start, since channels are usually listed first
+                                    break
+                                }
+                            }
+                            org.xmlpull.v1.XmlPullParser.END_TAG -> {
+                                if (parser.name == "channel") {
+                                    if (currentId.isNotEmpty() && currentName.isNotEmpty()) {
+                                        val cNameNormalized = currentName.lowercase().replace(Regex("[^a-z0-9]"), "")
+                                        if (cNameNormalized.contains(searchTarget) || searchTarget.contains(cNameNormalized)) {
+                                            results.add(Pair(currentId, currentName))
+                                        }
+                                    }
+                                    insideChannel = false
+                                }
+                            }
+                        }
+                        eventType = parser.next()
+                    }
+                    stream.close()
+                }
+                conn.disconnect()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return@withContext results.distinctBy { it.first }
     }
 
     /**
