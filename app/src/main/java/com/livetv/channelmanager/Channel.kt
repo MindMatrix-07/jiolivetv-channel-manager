@@ -10,5 +10,6 @@ data class Channel(
     val channelNumber: Int,
     val streamUrl: String,
     val logoUrl: String = "",
-    val epgId: String = ""
+    val epgId: String = "",
+    val epgUrl: String = ""
 ) : Parcelable

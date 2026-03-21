@@ -79,6 +79,7 @@ class AddChannelActivity : AppCompatActivity() {
             binding.etStreamUrl.setText(existing.streamUrl)
             binding.etLogoUrl.setText(existing.logoUrl)
             binding.etEpgId.setText(existing.epgId)
+            binding.etEpgUrl.setText(existing.epgUrl)
         } else {
             supportActionBar?.title = "Add Channel"
         }
@@ -295,6 +296,7 @@ class AddChannelActivity : AppCompatActivity() {
             val url = binding.etStreamUrl.text.toString().trim()
             val logo = binding.etLogoUrl.text.toString().trim()
             val epgId = binding.etEpgId.text.toString().trim()
+            val epgUrl = binding.etEpgUrl.text.toString().trim()
 
             var valid = true
             if (name.isEmpty()) { binding.tilChannelName.error = "Required"; valid = false }
@@ -322,7 +324,8 @@ class AddChannelActivity : AppCompatActivity() {
                     channelNumber = numStr.toInt(),
                     streamUrl = finalUrl,
                     logoUrl = logo,
-                    epgId = epgId
+                    epgId = epgId,
+                    epgUrl = epgUrl
                 )
                 setResult(RESULT_OK, Intent().putExtra("channel", channel).putExtra("edit_index", editIndex))
                 finish()

@@ -44,7 +44,8 @@ object SupabaseSync {
                         channelNumber = obj.getInt("channel_id"),
                         streamUrl     = obj.getString("channel_url"),
                         logoUrl       = obj.optString("logo_url", ""),
-                        epgId         = obj.optString("epg_id", "")
+                        epgId         = obj.optString("epg_id", ""),
+                        epgUrl        = obj.optString("epg_url", "")
                     )
                 )
             }
@@ -132,6 +133,9 @@ object SupabaseSync {
         put("channel_language_id", 7)
         if (ch.epgId.isNotBlank()) {
             put("epg_id", ch.epgId)
+        }
+        if (ch.epgUrl.isNotBlank()) {
+            put("epg_url", ch.epgUrl)
         }
     }
 

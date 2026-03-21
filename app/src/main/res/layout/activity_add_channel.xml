@@ -88,6 +88,22 @@
                     android:text="Fetch EPG" />
             </LinearLayout>
 
+            <!-- EPG URL -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEpgUrl"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="EPG Source URL (optional)">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEpgUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- ─── Stream Link Extractor Card ─── -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
