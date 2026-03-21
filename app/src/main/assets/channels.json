@@ -1,0 +1,74 @@
+[
+  {
+    "channel_id": 827,
+    "name": "Asianet HD",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/asianet-hd-in.png",
+    "epg_id": "177"
+  },
+  {
+    "channel_id": 826,
+    "name": "Asianet",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/asianet-in.png",
+    "epg_id": "179"
+  },
+  {
+    "channel_id": 830,
+    "name": "Asianet News",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/asianet-news-in.png",
+    "epg_id": "180"
+  },
+  {
+    "channel_id": 831,
+    "name": "Asianet Movies",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/asianet-movies-in.png",
+    "epg_id": "181"
+  },
+  {
+    "channel_id": 835,
+    "name": "Asianet Plus",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/asianet-plus-in.png",
+    "epg_id": "182"
+  },
+  {
+    "channel_id": 648,
+    "name": "Mazhavil Manorama",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/mazhavil-manorama-in.png",
+    "epg_id": "648"
+  },
+  {
+    "channel_id": 900,
+    "name": "Surya HD",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/surya-hd-in.png",
+    "epg_id": "900"
+  },
+  {
+    "channel_id": 710,
+    "name": "Kairali TV",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/kairali-tv-in.png",
+    "epg_id": "710"
+  },
+  {
+    "channel_id": 780,
+    "name": "Mathrubhumi News",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/mathrubhumi-news-in.png",
+    "epg_id": "780"
+  },
+  {
+    "channel_id": 723,
+    "name": "Amrita TV",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/amrita-tv-in.png",
+    "epg_id": "723"
+  },
+  {
+    "channel_id": 747,
+    "name": "Surya Music",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/surya-music-in.png",
+    "epg_id": "747"
+  },
+  {
+    "channel_id": 1754,
+    "name": "Surya Movies",
+    "logo": "https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/india/surya-movies-in.png",
+    "epg_id": "1754"
+  }
+]
