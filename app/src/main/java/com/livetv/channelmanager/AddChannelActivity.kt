@@ -76,8 +76,9 @@ class AddChannelActivity : AppCompatActivity() {
             supportActionBar?.title = "Edit Channel"
             binding.etChannelName.setText(existing.name)
             binding.etChannelNumber.setText(existing.channelNumber.toString())
-            binding.etStreamUrl.setText(existing.streamUrl)
-            if (existing.streamUrl.isNotBlank()) {
+            val displayUrl = existing.streamUrl.replace("#direct", "")
+            binding.etStreamUrl.setText(displayUrl)
+            if (existing.streamUrl.endsWith("#direct")) {
                 binding.switchDirectStream.isChecked = true
                 binding.cardExtractor.visibility = View.GONE
                 binding.tilStreamUrl.visibility = View.VISIBLE
@@ -336,11 +337,12 @@ class AddChannelActivity : AppCompatActivity() {
                     }
                 }
 
+                val isDirect = binding.switchDirectStream.isChecked
                 val channel = Channel(
                     id = existing?.id ?: java.util.UUID.randomUUID().toString(),
                     name = name,
                     channelNumber = numStr.toInt(),
-                    streamUrl = finalUrl,
+                    streamUrl = if (isDirect && !finalUrl.endsWith("#direct")) "$finalUrl#direct" else finalUrl.replace("#direct", ""),
                     logoUrl = logo,
                     epgId = epgId,
                     epgUrl = epgUrl
