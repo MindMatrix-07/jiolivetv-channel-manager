@@ -105,7 +105,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- ─── Stream Link Extractor Card ─── -->
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchDirectStream"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Direct Stream Link (No Extraction)"
+                android:layout_marginBottom="12dp" />
+
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardExtractor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -169,14 +177,15 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Stream URL (auto-filled by extractor or manual) -->
+            <!-- Stream URL (auto-filled by extractor or manual direct stream) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilStreamUrl"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="HLS Stream URL (.m3u8)">
+                android:visibility="gone"
+                android:hint="Direct Stream URL (e.g. M3U8 or Player HTML)">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etStreamUrl"
                     android:layout_width="match_parent"

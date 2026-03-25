@@ -77,6 +77,11 @@ class AddChannelActivity : AppCompatActivity() {
             binding.etChannelName.setText(existing.name)
             binding.etChannelNumber.setText(existing.channelNumber.toString())
             binding.etStreamUrl.setText(existing.streamUrl)
+            if (existing.streamUrl.isNotBlank()) {
+                binding.switchDirectStream.isChecked = true
+                binding.cardExtractor.visibility = View.GONE
+                binding.tilStreamUrl.visibility = View.VISIBLE
+            }
             binding.etLogoUrl.setText(existing.logoUrl)
             binding.etEpgId.setText(existing.epgId)
             binding.etEpgUrl.setText(existing.epgUrl)
@@ -133,6 +138,16 @@ class AddChannelActivity : AppCompatActivity() {
             pickImageLauncher.launch("image/*")
         }
 
+        binding.switchDirectStream.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.cardExtractor.visibility = View.GONE
+                binding.tilStreamUrl.visibility = View.VISIBLE
+            } else {
+                binding.cardExtractor.visibility = View.VISIBLE
+                binding.tilStreamUrl.visibility = View.GONE
+            }
+        }
+
         // ─── Extract Stream Link ───
         binding.btnExtract.setOnClickListener {
             val raw = binding.etSourceUrl.text.toString().trim()
@@ -158,6 +173,7 @@ class AddChannelActivity : AppCompatActivity() {
                     binding.btnExtract.isEnabled = true
                     if (m3u8Url != null) {
                         binding.etStreamUrl.setText(m3u8Url)
+                        binding.tilStreamUrl.visibility = View.VISIBLE
                         binding.tvExtractStatus.text = "✅ Success! M3U8 URL extracted and filled below."
                         binding.tvExtractStatus.setTextColor(ContextCompat.getColor(this@AddChannelActivity, android.R.color.holo_green_dark))
                     } else {
@@ -181,6 +197,7 @@ class AddChannelActivity : AppCompatActivity() {
                 binding.btnExtract.isEnabled = true
                 if (result != null) {
                     binding.etStreamUrl.setText(result)
+                    binding.tilStreamUrl.visibility = View.VISIBLE
                     binding.tvExtractStatus.text = "✅ Stream URL extracted. No ads."
                     binding.tvExtractStatus.setTextColor(ContextCompat.getColor(this@AddChannelActivity, android.R.color.holo_green_dark))
                 } else {
@@ -276,6 +293,7 @@ class AddChannelActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                if (binding.switchDirectStream.isChecked) return
                 val raw = s.toString().trim()
                 if (raw.contains("player") || raw.contains("play.html")) {
                     val resolved = extractInnerUrlFromPlayer(raw)
@@ -310,7 +328,7 @@ class AddChannelActivity : AppCompatActivity() {
                 var finalUrl = url
                 
                 // If it's a player page, extract the inner URL (e.g. live3.php)
-                if (url.contains("player.html", ignoreCase = true) || url.contains("play.html", ignoreCase = true)) {
+                if (!binding.switchDirectStream.isChecked && (url.contains("player.html", ignoreCase = true) || url.contains("play.html", ignoreCase = true))) {
                     val uri = android.net.Uri.parse(url)
                     val extracted = uri.getQueryParameter("url")
                     if (extracted != null) {
